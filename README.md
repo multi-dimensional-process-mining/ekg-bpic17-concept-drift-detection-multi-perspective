@@ -30,7 +30,7 @@ Install [Neo4j](https://neo4j.com/download/):
     - In the conf file, you should add the following line `apoc.import.file.enabled=true`.
 
 ## Data set specific information
-We provide data and scripts for BPI Challenge 2016; store the original data in CSV format in the directory `/data`.
+We provide data and scripts for BPI Challenge 2017; store the original data in CSV format in the directory `/data`.
 The datasets are available from:
 
             Esser, Stefan, & Fahland, Dirk. (2020). Event Data and Queries
@@ -39,19 +39,14 @@ The datasets are available from:
             http://doi.org/10.5281/zenodo.3865222
 
 ## JSON 
-- **json_files/BPIC16.json** - json file that contains the semantic header for BPIC16
-- **json_files/BPIC16_DS.json** - json file that contains a description for the different datasets for BPIC16 (event
+- **json_files/BPIC17.json** - json file that contains the semantic header for BPIC17
+- **json_files/BPIC17_DS.json** - json file that contains a description for the different datasets for BPIC17 (event
   tables etc)
-
-Furthermore, we provide: 
-
-- **file_preparation/bpic16_prepare.py** - normalizes the original CSV data to an event table in CSV
-  format required for the import and stores the output in the directory `ROOT/data/prepared/`
 
 ### main script
 There is one script that creates the Event knowledge graph: **main.py**
 
-This script imports normalized event table of BPIC16 from CSV files and executes several data modeling queries to construct an event knowledge graph using the semantic header.
+This script imports normalized event table of BPIC17 from CSV files and executes several data modeling queries to construct an event knowledge graph using the semantic header.
 
 How to use
 ----------
@@ -62,6 +57,5 @@ For data import
    - For database settings, see [Create a new graph database](### Create a new graph database).
    - Set `use_sample` to True/False
 2. start the Neo4j server
-3. Run bpic16_prepare.py
-4. run main.py
+3. run main.py
 
