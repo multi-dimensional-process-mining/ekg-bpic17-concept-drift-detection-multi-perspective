@@ -4,8 +4,8 @@ from custom_modules.custom_queries.delay_analysis import PerformanceAnalyzeDelay
 
 
 class PerformanceAnalyzeDelays:
-    def __init__(self):
-        self.connection = DatabaseConnection()
+    def __init__(self, db_connection):
+        self.connection = db_connection
 
     @Performance.track()
     def enrich_with_delay_edges(self):
@@ -19,7 +19,7 @@ class PerformanceAnalyzeDelays:
             print(f"{r['delay_by']} delayed an activity {r['frequency']} times.")
 
     @Performance.track()
-    def visualize_delays(self,threshold:int=0):
+    def visualize_delays(self, threshold: int = 0):
         self.connection.exec_query(ql.visualize_delays,
                                    **{
                                        "threshold": threshold
