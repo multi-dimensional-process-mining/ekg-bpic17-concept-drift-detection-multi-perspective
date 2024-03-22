@@ -4,12 +4,13 @@ from custom_modules.custom_queries.discovery_dfg import DiscoverDFGQueryLibrary 
 
 
 class DiscoverDFG:
-    def __init__(self):
-        self.connection = DatabaseConnection()
+    def __init__(self, db_connection, semantic_header):
+        self.connection = db_connection
+        self.semantic_header = semantic_header
 
     @Performance.track()
     def discover_dfg_for_entity(self, entity_str: str, df_threshold: int = 0, relative_df_threshold: float = 0.0):
-        entity = SemanticHeader().get_entity(entity_type=entity_str)
+        entity = self.semantic_header.get_entity(entity_type=entity_str)
 
         if relative_df_threshold == 0.0:
             self.connection.exec_query(ql.aggregate_df_relations,
