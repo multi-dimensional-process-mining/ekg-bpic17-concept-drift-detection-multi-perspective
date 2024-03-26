@@ -10,9 +10,6 @@
       "WorkflowRecord",
       "WorkflowCorrRecord",
       "OfferRecord",
-      "OfferEventIdRecord",
-      "OfferRecord",
-      "OfferIdRecord",
       "ResourceRecord"
     ],
     "add_log": true,

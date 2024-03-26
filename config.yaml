@@ -3,7 +3,6 @@ db_name: "neo4j"
 uri: "bolt://localhost:7687"
 user: "neo4j"
 password: "bpic2017promg"
-import_directory: "D:/Neo4jDesktop/relate-data/dbmss/dbms-e6df93d2-3d6f-4089-93a9-9f22de7d632a/import"
 
 # Dataset information
 dataset_name: "BPIC17"

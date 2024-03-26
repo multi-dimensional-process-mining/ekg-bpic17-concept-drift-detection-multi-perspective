@@ -1,8 +1,5 @@
 from datetime import datetime
-
-from promg import SemanticHeader, OcedPg
 from promg import DatabaseConnection
-from promg import DatasetDescriptions
 from promg import Configuration
 
 from promg import Performance
@@ -14,8 +11,8 @@ from modules.task_clustering.task_clustering import TaskClustering
 from modules.task_clustering.cluster_visualization import ClusterVisualizer
 from modules.task_concept_drift_detection.concept_drift_analysis import ConceptDriftDetection
 
-from colorama import Fore
-
+from main_functionalities import clear_db, load_data, transform_data, delete_parallel_df, discover_model, build_tasks, \
+    infer_delays, print_statistics
 from analysis_configuration import AnalysisConfiguration
 
 config = Configuration()
@@ -44,8 +41,14 @@ step_calculate_magnitude = False
 step_calculate_change_magnitude_percentiles = False
 step_detailed_change_signal_analysis = False
 
-
-def main() -> None:
+def main(config,
+         step_clear_db=True,
+         step_populate_graph=True,
+         step_delete_parallel_df=True,
+         step_discover_model=True,
+         step_build_tasks=True,
+         step_infer_delays=True
+         ) -> None:
     """
     Main function, read all the logs, clear and create the graph, perform checks
     @return: None
@@ -54,33 +57,29 @@ def main() -> None:
 
     db_connection = DatabaseConnection.set_up_connection(config=config)
     performance = Performance.set_up_performance(config=config)
-    db_manager = DBManagement()
 
     if step_clear_db:
-        print(Fore.RED + 'Clearing the database.' + Fore.RESET)
-        db_manager.clear_db(replace=True)
-        db_manager.set_constraints()
+        clear_db(db_connection)
 
     if step_populate_graph:
-        if config.use_preprocessed_files:
-            print(Fore.RED + '💾 Preloaded files are used!' + Fore.RESET)
-        else:
-            print(Fore.RED + '📝 Importing and creating files' + Fore.RESET)
+        load_data(db_connection=db_connection,
+                  config=config)
+        transform_data(db_connection=db_connection,
+                       config=config)
 
-        oced_pg = OcedPg(dataset_descriptions=dataset_descriptions,
-                         use_sample=config.use_sample,
-                         use_preprocessed_files=config.use_preprocessed_files)
-        #
-        oced_pg.load_and_transform()
-        oced_pg.create_df_edges()
+    if step_delete_parallel_df:
+        delete_parallel_df(db_connection=db_connection, config=config)
+
+    if step_discover_model:
+        discover_model(db_connection=db_connection, config=config)
 
     if step_build_tasks:
-        print(Fore.RED + 'Detecting tasks.' + Fore.RESET)
-        task_identifier = TaskIdentification(resource="Resource", case="CaseAWO")
-        task_identifier.identify_tasks()
-        task_identifier.aggregate_on_task_variant()
+        build_tasks(db_connection=db_connection, config=config)
         task_identifier_local = TaskIdentificationLocal(resource="Resource", case="CaseAWO")
         task_identifier_local.set_task_id()
+
+    if step_infer_delays:
+        infer_delays(db_connection=db_connection)
 
     if step_cluster_tasks:
         print(Fore.RED + 'Clustering tasks.' + Fore.RESET)
@@ -124,11 +123,18 @@ def main() -> None:
 
         # TODO: Add steps for concept drift detection
 
+
     performance.finish_and_save()
-    db_manager.print_statistics()
+    print_statistics(db_connection)
 
     db_connection.close_connection()
 
 
 if __name__ == "__main__":
-    main()
+    main(config=Configuration.init_conf_with_config_file(),
+         step_clear_db=True,
+         step_populate_graph=True,
+         step_delete_parallel_df=True,
+         step_discover_model=True,
+         step_build_tasks=True,
+         step_infer_delays=True)
