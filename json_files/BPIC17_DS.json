@@ -1,10 +1,19 @@
 [
   {
     "name": "BPIC17Performance",
-    "file_directory": "data\\BPIC17\\",
+    "file_directory": "data\\",
     "file_name": "BPI_Challenge_2017.csv",
     "labels": [
-      "Record"
+      "EventRecord",
+      "ApplicationRecord",
+      "ApplicationDetailRecord",
+      "WorkflowRecord",
+      "WorkflowCorrRecord",
+      "OfferRecord",
+      "OfferEventIdRecord",
+      "OfferRecord",
+      "OfferIdRecord",
+      "ResourceRecord"
     ],
     "add_log": true,
     "add_event_index": true,
