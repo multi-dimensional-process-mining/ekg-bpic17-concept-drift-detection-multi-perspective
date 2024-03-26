@@ -1,4 +1,4 @@
-# Event Knowledge Graph for BPIC17 Data
+# Multi-Perspective Concept Drift Detection on BPIC17 Event Knowledge Graph
 ---------------------
 ## Installation
 ### Neo4j
