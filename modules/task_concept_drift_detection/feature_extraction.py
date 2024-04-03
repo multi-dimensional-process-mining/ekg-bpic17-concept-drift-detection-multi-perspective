@@ -14,16 +14,12 @@ from queries import query_result_parser as qp
 
 
 class FeatureExtraction:
-    def __init__(self, dataset_name: str, case: ConstructedNodes, actor: ConstructedNodes, exclude_cluster: str):
+    def __init__(self, db_connection, dataset_name: str, case: ConstructedNodes, actor: ConstructedNodes, exclude_cluster: str):
+        self.connection = db_connection
         self.intermediate_output_directory = f"output_intermediate\\{dataset_name}\\subgraphs\\"
-        self.connection = DatabaseConnection()
         self.case = case
         self.actor = actor
-        # TODO: retrieve event class from semantic header
-        if dataset_name == "BPIC2017":
-            self.event_classifier = "activity_lifecycle"
-        else:
-            self.event_classifier = "activity"
+        # TODO: retrieve event class from semantic header?
         os.makedirs(self.intermediate_output_directory, exist_ok=True)
         self.num_windows = None
         self.exclude_cluster = exclude_cluster
@@ -94,7 +90,7 @@ class FeatureExtraction:
                         self.connection.exec_query(ql.q_retrieve_event_subgraph_nodes, **{
                             "start_date": (graph_start_date + timedelta(days=window * window_size)).strftime("%Y-%m-%d"),
                             "end_date": (graph_start_date + timedelta(days=(window + 1) * window_size)).strftime("%Y-%m-%d"),
-                            "case": self.case, "resource": self.actor, "event_classifier": self.event_classifier}))
+                            "case": self.case, "resource": self.actor}))
                     df_event_subgraphs_nodes.to_pickle(
                         f"{self.intermediate_output_directory}event_node_ws{window_size}_w{window}.pkl")
                 self.event_subgraphs_nodes.append(df_event_subgraphs_nodes)
@@ -124,7 +120,7 @@ class FeatureExtraction:
                         self.connection.exec_query(ql.q_retrieve_event_subgraph_edges, **{
                             "start_date": (graph_start_date + timedelta(days=window * window_size)).strftime("%Y-%m-%d"),
                             "end_date": (graph_start_date + timedelta(days=(window + 1) * window_size)).strftime("%Y-%m-%d"),
-                            "case": self.case, "resource": self.actor, "event_classifier": self.event_classifier}))
+                            "case": self.case, "resource": self.actor}))
                     df_event_subgraphs_edges.to_pickle(
                         f"{self.intermediate_output_directory}event_edge_ws{window_size}_w{window}.pkl")
                 self.event_subgraphs_edges.append(df_event_subgraphs_edges)

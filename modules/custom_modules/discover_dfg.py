@@ -1,6 +1,5 @@
-from promg import DatabaseConnection, SemanticHeader
 from promg import Performance
-from custom_modules.custom_queries.discovery_dfg import DiscoverDFGQueryLibrary as ql
+from modules.custom_queries.discovery_dfg import DiscoverDFGQueryLibrary as ql
 
 
 class DiscoverDFG:

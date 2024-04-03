@@ -14,8 +14,8 @@ from queries import query_result_parser as qp
 
 class ClusterVisualizer:
 
-    def __init__(self, dataset_name):
-        self.connection = DatabaseConnection()
+    def __init__(self, db_connection, dataset_name):
+        self.connection = db_connection
         self.vc = VisualizationConfiguration()
 
         self.df_task_variants = qp.parse_to_dataframe(self.connection.exec_query(ql.q_retrieve_clusters))

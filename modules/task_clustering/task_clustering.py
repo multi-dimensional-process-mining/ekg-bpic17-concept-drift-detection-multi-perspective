@@ -13,11 +13,11 @@ from queries import query_result_parser as qp
 
 class TaskClustering:
 
-    def __init__(self, dataset_name, resource: str, case: str, min_variant_freq: int):
-        self.connection = DatabaseConnection()
+    def __init__(self, db_connection, semantic_header, dataset_name, resource: str, case: str, min_variant_freq: int):
+        self.connection = db_connection
         self.dataset_name = dataset_name
-        self.resource: ConstructedNodes = SemanticHeader().get_entity(resource)
-        self.case: ConstructedNodes = SemanticHeader().get_entity(case)
+        self.resource: ConstructedNodes = semantic_header.get_entity(resource)
+        self.case: ConstructedNodes = semantic_header.get_entity(case)
 
         self.min_variant_freq = min_variant_freq
         self.metric = "euclidean"
@@ -55,6 +55,7 @@ class TaskClustering:
             self.df_variants_clustered = pd.concat([self.df_variants, df_clusters], axis=1)
 
             # fix labeling of variants that were not considered in the clustering
+            self.df_variants_clustered['cluster'] = self.df_variants_clustered['cluster'].astype(str)
             A_id = 1
             for index, row in self.df_variants_clustered.iterrows():
                 if row['ID'] in manually_clustered_variants:

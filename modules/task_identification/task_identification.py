@@ -1,13 +1,13 @@
 from queries.task_identification import TaskIdentifierLibrary as tf_ql
-from promg.data_managers.semantic_header import ConstructedNodes, SemanticHeader
-from promg import DatabaseConnection, Performance
+from promg.data_managers.semantic_header import ConstructedNodes
+from promg import Performance
 
 
 class TaskIdentification:
-    def __init__(self, resource: str, case: str):
-        self.connection = DatabaseConnection()
-        self.resource: ConstructedNodes = SemanticHeader().get_entity(resource)
-        self.case: ConstructedNodes = SemanticHeader().get_entity(case)
+    def __init__(self, db_connection, semantic_header, resource: str, case: str):
+        self.connection = db_connection
+        self.resource: ConstructedNodes = semantic_header.get_entity(resource)
+        self.case: ConstructedNodes = semantic_header.get_entity(case)
 
     @Performance.track("resource")
     def identify_tasks(self):

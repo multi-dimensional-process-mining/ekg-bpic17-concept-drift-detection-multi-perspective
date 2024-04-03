@@ -25,5 +25,16 @@ class AnalysisConfiguration:
         self.min_actor_frequency = config['min_actor_frequency']
         self.min_collab_frequency = config['min_collab_frequency']
 
-        self.cp_task_dict = config['cp_task_dict']
-        self.cp_variant_dict = config['cp_variant_dict']
+        self.comp_window_size = config['comp_window_size']
+        self.comp_feature_set_name_process_level = config['comp_feature_set_name_process_level']
+        self.comp_process_drift_penalty = config['comp_process_drift_penalty']
+        self.comp_subgroup_to_compare = config['comp_subgroup_to_compare']
+        self.comp_subgroup_feature_set_name = config['comp_subgroup_feature_set_name']
+        self.comp_subgroup_drift_penalty = config['comp_subgroup_drift_penalty']
+
+        self.mc_window_size = config['mc_window_size']
+        self.mc_penalty = config['mc_penalty']
+
+        self.dc_penalty = config['dc_penalty']
+        self.dc_task_dict = config['dc_task_dict']
+        self.dc_variant_dict = config['dc_variant_dict']

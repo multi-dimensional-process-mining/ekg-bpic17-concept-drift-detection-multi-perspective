@@ -44,11 +44,11 @@ class ConceptDriftDetectionTasksQueryLibrary:
                      })
 
     @staticmethod
-    def q_retrieve_event_subgraph_nodes(start_date: str, end_date: str, case, resource, event_classifier):
+    def q_retrieve_event_subgraph_nodes(start_date: str, end_date: str, case, resource):
         query_str = '''
             MATCH (r:$resource)<-[:CORR]-(e:Event)-[:CORR]->(c:$case) 
                 WHERE date("$start_date") <= date(e.timestamp) <= date("$end_date")
-            WITH e.$event_classifier AS activity, c.sysId AS case, r.sysId AS actor
+            WITH e.activity+'+'+e.lifecycle AS activity, c.sysId AS case, r.sysId AS actor
             RETURN activity, case, actor
             '''
         return Query(query_str=query_str,
@@ -56,8 +56,7 @@ class ConceptDriftDetectionTasksQueryLibrary:
                          "start_date": start_date,
                          "end_date": end_date,
                          "case": case.type,
-                         "resource": resource.type,
-                         "event_classifier": event_classifier
+                         "resource": resource.type
                      })
 
     @staticmethod
@@ -89,14 +88,14 @@ class ConceptDriftDetectionTasksQueryLibrary:
                      })
 
     @staticmethod
-    def q_retrieve_event_subgraph_edges(start_date: str, end_date: str, case, resource, event_classifier):
+    def q_retrieve_event_subgraph_edges(start_date: str, end_date: str, case, resource):
         query_str = f'''
                 MATCH (e1:Event)-[r:$df_case|$df_resource]->(e2:Event) 
                     WHERE date("$start_date") <= date(e1.timestamp) 
                     AND date(e2.timestamp) <= date("$end_date")
                 MATCH (r1:$resource_node_label)<-[:CORR]-(e1)-[:CORR]->(c1:$case_node_label)
                 MATCH (r2:$resource_node_label)<-[:CORR]-(e2)-[:CORR]->(c2:$case_node_label)
-                WITH e1.$event_classifier AS activity_1, e2.$event_classifier AS activity_2, 
+                WITH e1.activity+'+'+e1.lifecycle AS activity_1, e2.activity+'+'+e2.lifecycle AS activity_2, 
                     c1.sysId AS case_1, c2.sysId AS case_2, r1.sysId AS actor_1, r2.sysId AS actor_2,
                     duration.inSeconds(e1.timestamp, e2.timestamp) AS duration, r.entityType AS entity_type
                 RETURN activity_1, activity_2, case_1, case_2, actor_1, actor_2, duration, entity_type
@@ -108,61 +107,48 @@ class ConceptDriftDetectionTasksQueryLibrary:
                          "case_node_label": case.type,
                          "resource_node_label": resource.type,
                          "df_case": case.get_df_label(),
-                         "df_resource": resource.get_df_label(),
-                         "event_classifier": event_classifier
+                         "df_resource": resource.get_df_label()
                      })
 
     @staticmethod
-    def q_list_variants_in_cluster(cluster: str, cluster_id: str):
+    def q_retrieve_variants_in_cluster(aggregation_type: str, aggregation_id):
         query_str = f'''
-            MATCH (ti:TaskInstance) WHERE ti.$cluster = $cluster_id
-            RETURN DISTINCT ti.path AS variant
+            MATCH (ti:TaskInstance) WHERE ti.$aggregation_type = $aggregation_id
+            RETURN DISTINCT ti.variant AS variant
             '''
         return Query(query_str=query_str,
                      template_string_parameters={
-                         "cluster": cluster,
-                         "cluster_id": cluster_id
+                         "aggregation_type": aggregation_type,
+                         "aggregation_id": aggregation_id
                      })
 
     @staticmethod
-    def query_activity_pairs_in_cluster(label, value, case, resource, event_classifier):
+    def q_retrieve_activity_pairs_in_cluster(aggregation_type: str, aggregation_id, case, resource):
         query_str = f'''
-                MATCH (e1:Event)<-[:CONTAINS]-(ti:TaskInstance)-[:CONTAINS]->(e2:Event) WHERE ti.$label = $value
+                MATCH (e1:Event)<-[:CONTAINS]-(ti:TaskInstance)-[:CONTAINS]->(e2:Event) WHERE ti.$aggregation_type = $aggregation_id
                 AND (e1)-[:$df_case]->(e2) AND (e1)-[:$df_resource]->(e2)
-                WITH e1.$event_classifier AS action1, e2.$event_classifier AS action2
+                WITH e1.activity+'+'+e1.lifecycle AS action1, e2.activity+'+'+e2.lifecycle AS action2
                 RETURN DISTINCT action1, action2
                 '''
-        # TODO: Add function to parse this result to query_parser
-            # result = session.run(q)
-            # act_pair_list = []
-            # for record in result:
-            #     act_pair_list.append([record['action1'], record['action2']])
         return Query(query_str=query_str,
                      template_string_parameters={
-                         "label": label,
-                         "value": value,
+                         "aggregation_type": aggregation_type,
+                         "aggregation_id": aggregation_id,
                          "df_case": case.get_df_label(),
-                         "df_resource": resource.get_df_label(),
-                         "event_classifier": event_classifier
+                         "df_resource": resource.get_df_label()
                      })
 
     @staticmethod
-    def query_activities_in_cluster(label, value, event_classifier):
+    def q_retrieve_activities_in_cluster(aggregation_type, aggregation_id):
         query_str = f'''
-                MATCH (ti:TaskInstance)-[:CONTAINS]->(e:Event) WHERE ti.$label = $value
-                WITH e.$event_classifier AS action
+                MATCH (ti:TaskInstance)-[:CONTAINS]->(e:Event) WHERE ti.$aggregation_type = $aggregation_id
+                WITH e.activity+'+'+e.lifecycle AS action
                 RETURN DISTINCT action
                 '''
-        # TODO: Add function to parse this result to query_parser
-            # result = session.run(q)
-            # action_list = []
-            # for record in result:
-            #     action_list.append(record['action'])
         return Query(query_str=query_str,
                      template_string_parameters={
-                         "label": label,
-                         "value": value,
-                         "event_classifier": event_classifier
+                         "aggregation_type": aggregation_type,
+                         "aggregation_id": aggregation_id
                      })
 
     @staticmethod

@@ -1,6 +1,6 @@
 from promg import DatabaseConnection
 from promg import Performance
-from custom_modules.custom_queries.delay_analysis import PerformanceAnalyzeDelaysQueryLibrary as ql
+from modules.custom_queries.delay_analysis import PerformanceAnalyzeDelaysQueryLibrary as ql
 
 
 class PerformanceAnalyzeDelays:

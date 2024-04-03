@@ -1,6 +1,6 @@
 from promg import DatabaseConnection, SemanticHeader
 from promg import Performance
-from custom_modules.custom_queries.df_interactions import InferDFInteractionsQueryLibrary as ql
+from modules.custom_queries.df_interactions import InferDFInteractionsQueryLibrary as ql
 
 
 class InferDFInteractions:
